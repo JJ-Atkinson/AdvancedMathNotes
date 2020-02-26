@@ -3,7 +3,8 @@
             [reagent.core :as r]
             [app.events :refer [increment decrement]]
             ["mathjs" :as mjs]
-            ["react-mathjax2" :as react-jax]))
+            ["react-mathjax2" :as react-jax]
+            [markdown-to-hiccup.core :as mdc]))
 
 (defn parse-math [text]
   (mjs/parse text))
@@ -13,37 +14,39 @@
 
 
 (defn math-node [& {:keys [mode content inline?] :or {mode :jax inline? false}}]
-  [:> react-jax/Context
-   {:input "tex"}
-   [:div 
-    [:> react-jax/Node (if inline? {:inline ""} {}) content]]])
+  [:div {:class (if inline? "inline" "")}
+   [:> react-jax/Context
+    {:input "tex"}
+    [:div
+     [:> react-jax/Node content]]]])
 
 (defn markdown-node [str]
-  )
+  [:div.md-content (mdc/md->hiccup str)])
 
 (defn header
   []
-  [:div
-   [:h1 "A template for reagent apps"]
-   [:div
-    "hi"
-    [math-node :content (-> "4pi*phi" parse-math to-tex)
-     :inline? true]]
+  [:div.flex.flex-row.flex-nowrap.w-100 
+   [:h1.w-75 "Math notes for the ages"]
+   [:a.w-25 "To index"]])
 
-   ])
 
-(defn counter
-  []
+(defn first-note []
+
   [:div
-   [:button.btn {:on-click #(decrement %)} "-"]
-   [:button {:disabled true} (get @app-state :count)]
-   [:button.btn {:on-click #(increment %)} "+"]])
+   [markdown-node "hello world"]
+   [:div [math-node :content (-> "5/(4pi*phi)" parse-math to-tex)
+          :inline? false]]
+   [markdown-node "Hello. This is the `first` markdown I've written in a _while_"]])
+
+
 
 
 
 
 
 (defn app []
-  [:div
-   [header]
-   [counter]])
+  [:div.full-page-width.center-content-horizontal
+   [:div.max-width-960.helvetica
+    [header]
+    [first-note]
+    ]])
