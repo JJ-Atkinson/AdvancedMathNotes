@@ -1,6 +1,7 @@
 (ns app.core
   (:require [reagent.core :as r]
-            [app.views :as views]))
+            [app.views :as views]
+            ["mathjs" :as mjs]))
 
 (defn ^:dev/after-load start
   []

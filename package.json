@@ -21,7 +21,8 @@
   "dependencies": {
     "create-react-class": "^15.6.3",
     "react": "^16.5.2",
-    "react-dom": "^16.5.2"
+    "react-dom": "^16.5.2",
+    "react-mathjax2": "0.0.2"
   },
   "devDependencies": {
     "shadow-cljs": "^2.6.10"
