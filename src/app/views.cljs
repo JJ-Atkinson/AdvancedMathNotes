@@ -4,7 +4,7 @@
             [app.events :refer [increment decrement]]
             ["mathjs" :as mjs]
             ["react-mathjax2" :as react-jax]
-            [markdown-to-hiccup.core :as mdc]))
+            [markdown.core :as mdc]))
 
 (defn parse-math [text]
   (mjs/parse text))
@@ -13,30 +13,54 @@
   (.toTex expression #js {:parenthesis "keep"}))
 
 
-(defn math-node [& {:keys [mode content inline?] :or {mode :jax inline? false}}]
+(defn math-node [{:keys [mode content inline?] :or {mode :jax inline? false}}]
   [:div {:class (if inline? "inline" "")}
    [:> react-jax/Context
     {:input "tex"}
     [:div
-     [:> react-jax/Node content]]]])
+     [:> react-jax/Node {:inline ""} content]]]])
 
 (defn markdown-node [str]
-  [:div.md-content (mdc/md->hiccup str)])
+  [:div.md-content {:dangerouslySetInnerHTML {:__html (mdc/md->html str)}}])
+
+(defn element? [e] (string? e))
+
+(defn tagify [ss]
+  (loop [items ss ret []]
+    (let [[tags rst] (split-with (complement element?) items)
+          item (first rst)
+          rst (rest rst)
+          nret (conj ret {:item item :tags (set tags)})]
+      (if-not (empty? rst)
+        (recur rst nret)
+        nret))))
+
+
+(defn freehand-note-content [strs]
+  [:div.note-content
+   (map
+     (fn [{:keys [tags item]}]
+       (condp #(contains? %2 %1) tags
+         :form [math-node {:content item
+                           :inline? (contains? tags :inline)
+                           :mode    (if (contains? tags :tex) :tex :ascii)}]
+         [markdown-node item]))
+     (tagify strs))])
 
 (defn header
   []
-  [:div.flex.flex-row.flex-nowrap.w-100 
+  [:div.flex.flex-row.flex-nowrap.w-100
    [:h1.w-75 "Math notes for the ages"]
    [:a.w-25 "To index"]])
 
 
 (defn first-note []
 
-  [:div
-   [markdown-node "hello world"]
-   [:div [math-node :content (-> "5/(4pi*phi)" parse-math to-tex)
-          :inline? false]]
-   [markdown-node "Hello. This is the `first` markdown I've written in a _while_"]])
+  [freehand-note-content
+   ["This is just some content I want to write about"
+    :form :inline "5x^8pi+e_h"
+    "**hello**"
+    ]])
 
 
 

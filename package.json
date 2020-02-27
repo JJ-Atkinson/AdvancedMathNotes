@@ -1,25 +1,18 @@
 {
-  "name": "shadow-reagent",
+  "name": "AdvancedMathNotes",
   "version": "0.0.1",
-  "description": "Template for shadow-cljs and reagent projects",
+  "description": "Live coding math notes",
   "repository": {
     "type": "git",
     "url": "https://github.com/jacekschae/shadow-reagent"
   },
   "author": {
-    "name": "Jacek Schae",
-    "email": "jacek.schae@gmail.com"
+    "name": "Jarrett R Atkinson"
   },
   "license": "EPL-2.0",
-  "scripts": {
-    "dev": "shadow-cljs watch app",
-    "release": "shadow-cljs release app",
-    "server": "shadow-cljs server",
-    "clean": "rm -rf target && rm -rf public/js",
-    "clean-win": "rmdir /s /q public/js & rmdir /s /q target"
-  },
   "dependencies": {
     "create-react-class": "^15.6.3",
+    "mathjs": "^6.6.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-mathjax2": "0.0.2"
