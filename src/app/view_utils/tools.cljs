@@ -1,10 +1,11 @@
-(ns app.views
+(ns app.view-utils.tools
   (:require [app.state :refer [app-state]]
             [reagent.core :as r]
             [app.events :refer [increment decrement]]
             ["mathjs" :as mjs]
             ["react-mathjax2" :as react-jax]
-            [markdown.core :as mdc]))
+            [markdown.core :as mdc]
+            [app.data-model :as dm]))
 
 (defn parse-math [text]
   (mjs/parse text))
@@ -16,9 +17,9 @@
 (defn math-node [{:keys [mode content inline?] :or {mode :jax inline? false}}]
   [:div {:class (if inline? "inline" "")}
    [:> react-jax/Context
-    {:input "tex"}
+    {:input (name mode)}
     [:div
-     [:> react-jax/Node {:inline ""} content]]]])
+     [:> react-jax/Node (if inline? {:inline ""} {}) content]]]])
 
 (defn markdown-node [str]
   [:div.md-content {:dangerouslySetInnerHTML {:__html (mdc/md->html str)}}])
@@ -47,30 +48,16 @@
          [markdown-node item]))
      (tagify strs))])
 
+
 (defn header
-  []
+  [title]
   [:div.flex.flex-row.flex-nowrap.w-100
-   [:h1.w-75 "Math notes for the ages"]
-   [:a.w-25 "To index"]])
+   [:h1.w-75 title]
+   [:a.w-25 {:href "#" :onClick #(dm/nav-home)} "To index"]])
 
-
-(defn first-note []
-
-  [freehand-note-content
-   ["This is just some content I want to write about"
-    :form :inline "5x^8pi+e_h"
-    "**hello**"
-    ]])
-
-
-
-
-
-
-
-(defn app []
+(defn default-notes-view [title content-fn]
   [:div.full-page-width.center-content-horizontal
    [:div.max-width-960.helvetica
-    [header]
-    [first-note]
+    [header title]
+    [content-fn]
     ]])
